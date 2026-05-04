@@ -287,7 +287,7 @@ export class DepartmentComponent implements OnInit {
     } else {
       this.seo.setPage({
         title: dept.departamento,
-        description: `Productos del departamento ${dept.departamento} en ${this.seo.brand}. Filtra por categoría, añade al carrito y consulta por WhatsApp.`,
+        description: `Productos del departamento ${dept.departamento} en ${this.seo.brand}. Añade al carrito y consulta por WhatsApp.`,
         urlPath: `/departamento/${id}`,
         jsonLd: null,
       });
