@@ -33,9 +33,7 @@ import { ProductWithImage } from '../../models/store.models';
         }
         @if (product.precioUSD) {
           <p class="product-price">{{ product.precioUSD | currency:'USD':'symbol':'1.2-2' }}</p>
-        } @else if (product.precio) {
-          <p class="product-price">{{ product.precio | currency:'USD':'symbol':'1.2-2' }}</p>
-        }
+        } 
       </div>
     </a>
   `,
