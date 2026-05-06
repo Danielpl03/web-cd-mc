@@ -40,7 +40,9 @@ export interface Precio {
 export interface ProductoImage {
   id_relacion: number;
   id_producto: number;
-  nombre_image: string;
+  nombre: string;
+  ext: string
+  principal: boolean
 }
 
 export interface Etiqueta {
@@ -61,12 +63,12 @@ export interface EtiquetaConValor extends Etiqueta {
 }
 
 export interface ProductWithImage extends Product {
-  imageUrl: string;
+  imageUrl?: string;
   precioUSD?: number;
 }
 
 export interface ProductDetail extends ProductWithImage {
-  images: string[];
+  images?: string[];
   etiquetas: EtiquetaConValor[];
   department: Department;
   category?: Category;
@@ -77,7 +79,7 @@ export interface CartLineItem {
   id_producto: number;
   descripcion: string;
   codigo: string | null;
-  imageUrl: string;
+  imageUrl?: string;
   /** Precio unitario en USD (misma lógica que precioUSD / precio en ficha). */
   unitPrice: number;
   quantity: number;
