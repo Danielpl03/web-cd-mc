@@ -239,7 +239,7 @@ export class SupabaseService {
       )
       .eq('id_departamento', departmentId)
       .eq('activo', true)
-      // .eq('web', true)
+      .eq('web', true)
       .order('descripcion');
 
     if (error) {
@@ -272,7 +272,7 @@ export class SupabaseService {
       )
       .eq('id_categoria', categoryId)
       .eq('activo', true)
-      // .eq('web', true)
+      .eq('web', true)
       .order('descripcion');
 
     if (error) {
@@ -299,7 +299,7 @@ export class SupabaseService {
         'id_producto, descripcion, codigo, id_departamento, id_categoria, activo, web',
       )
       .eq('activo', true)
-      // .eq('web', true)
+      .eq('web', true)
       .or(`descripcion.ilike.%${query}%,codigo.ilike.%${query}%`)
       .order('descripcion')
       .limit(50);
