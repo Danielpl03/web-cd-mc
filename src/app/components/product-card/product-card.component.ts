@@ -133,6 +133,7 @@ export class ProductCardComponent {
   imageLoading = true;
 
   onImageLoad(): void {
+    console.log(this.product)
     this.imageLoading = false;
   }
 

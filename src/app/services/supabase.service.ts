@@ -54,7 +54,11 @@ export class SupabaseService {
 
       if (!error && data) {
         (data as ProductoImage[]).forEach((p) => {
-          this.mainImageCache.set(p.id_producto, this.parseName(p.nombre + '_' + p.id_relacion));
+          this.mainImageCache.set(
+            p.id_producto,
+            this.getProductImageUrl(
+            this.parseName(p.nombre) + '_' + p.id_relacion),
+          );
         });
         this.mainImageCacheLoaded = true;
       }
@@ -68,18 +72,19 @@ export class SupabaseService {
 
       if (!error && data) {
         (data as ProductoImage[]).forEach((p) => {
-          if (this.imagesCache.has(p.id_producto)) {
-            this.imagesCache.set(p.id_producto, [
-              ...this.imagesCache.get(p.id_producto)!,
-              this.parseName(p.nombre),
-            ]);
-          } else {
-            this.imagesCache.set(p.id_producto, [...this.parseName(p.nombre + '_' + p.id_relacion)]);
+          var imag = this.imagesCache.get(p.id_producto);
+          if (imag == undefined) {
+            imag = [];
           }
+          imag.push(this.getProductImageUrl(this.parseName(p.nombre) + '_' + p.id_relacion));
+          this.imagesCache.set(p.id_producto, imag);
         });
+
         this.imagesCacheLoaded = true;
       }
     }
+    console.log(this.imagesCache);
+    console.log(this.mainImageCache);
   }
 
   // Preload all USD prices into cache
@@ -106,7 +111,11 @@ export class SupabaseService {
 
   // Get main image from cache
   getImageUrl(productId: number): string | undefined {
-    return this.mainImageCache.get(productId);
+    var img = this.mainImageCache.get(productId);
+    if(img != undefined){
+      return img;
+    }
+    return this.imagesCache.get(productId)?.at(0);
   }
 
   // Get gallery images from cache
@@ -115,13 +124,12 @@ export class SupabaseService {
   }
 
   // Get public URL for product image (format: 'nombre -codigo')
-  // getProductImageUrl(product: Product): string {
-  //   const imageName = this.parseName(product.descripcion, product.codigo);
-  //   const { data } = this.supabase.storage
-  //     .from(environment.bucketName)
-  //     .getPublicUrl(imageName);
-  //   return data.publicUrl;
-  // }
+  getProductImageUrl(imageName: string): string {
+    const { data } = this.supabase.storage
+      .from(environment.bucketName)
+      .getPublicUrl(imageName);
+    return data.publicUrl;
+  }
 
   // Parse name for image name
   parseNameProduct(descripcion: string, codigo?: string | null): string {

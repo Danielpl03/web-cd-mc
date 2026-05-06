@@ -196,9 +196,14 @@ export class ProductComponent implements OnInit {
     
     const productDetail = await this.supabaseService.getProductDetail(productId);
     this.product.set(productDetail);
-    const images = [productDetail?.imageUrl ?? ''];
-    images.push(...(productDetail?.images ?? []));
-    this.images.set(images);
+    var img: string[] = [];
+    if(productDetail?.imageUrl){
+      img.push(productDetail!.imageUrl)
+    }
+    if(productDetail?.images){
+      productDetail.images.forEach( value => img.push(value) )
+    }
+    this.images.set(img);
     this.loading.set(false);
 
     if (!productDetail) {
