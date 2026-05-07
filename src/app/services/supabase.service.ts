@@ -98,7 +98,7 @@ export class SupabaseService {
 
     if (!error && data) {
       (data as Precio[]).forEach((p) => {
-        this.pricesCache.set(p.id_producto, p.precio);
+        this.pricesCache.set(p.id_producto, Math.ceil(p.precio));
       });
       this.pricesCacheLoaded = true;
     }
