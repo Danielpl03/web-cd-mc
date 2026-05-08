@@ -5,7 +5,7 @@ import { LoadingSpinnerComponent } from '../../components/loading-spinner/loadin
 import { EmptyStateComponent } from '../../components/empty-state/empty-state.component';
 import { SupabaseService } from '../../services/supabase.service';
 import { SeoService } from '../../services/seo.service';
-import { ProductWithImage } from '../../models/store.models';
+import { ProductDetail } from '../../models/store.models';
 
 @Component({
   selector: 'app-search',
@@ -130,7 +130,7 @@ import { ProductWithImage } from '../../models/store.models';
 })
 export class SearchComponent implements OnInit {
   query = signal('');
-  products = signal<ProductWithImage[]>([]);
+  products = signal<ProductDetail[]>([]);
   loading = signal(true);
 
   constructor(

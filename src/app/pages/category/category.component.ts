@@ -5,7 +5,7 @@ import { LoadingSpinnerComponent } from '../../components/loading-spinner/loadin
 import { EmptyStateComponent } from '../../components/empty-state/empty-state.component';
 import { SupabaseService } from '../../services/supabase.service';
 import { SeoService } from '../../services/seo.service';
-import { Category, ProductWithImage, DepartmentWithImage } from '../../models/store.models';
+import { Category, ProductDetail, DepartmentWithImage } from '../../models/store.models';
 
 @Component({
   selector: 'app-category',
@@ -143,7 +143,7 @@ import { Category, ProductWithImage, DepartmentWithImage } from '../../models/st
 export class CategoryComponent implements OnInit {
   category = signal<Category | null>(null);
   department = signal<DepartmentWithImage | null>(null);
-  products = signal<ProductWithImage[]>([]);
+  products = signal<ProductDetail[]>([]);
   loading = signal(true);
 
   constructor(

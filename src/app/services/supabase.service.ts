@@ -5,7 +5,6 @@ import {
   Department,
   Category,
   Product,
-  ProductWithImage,
   DepartmentWithImage,
   Precio,
   ProductoImage,
@@ -31,8 +30,20 @@ export class SupabaseService {
   private mainImageCacheLoaded = false;
   private imagesCacheLoaded = false;
 
+  private etiquetasFT = new Map<number, Etiqueta>();
+  private etiquetasInt = new Map<number, Etiqueta>();
+
+  private etiquetasFTLoaded = false;
+  private etiquetasIntLoaded = false;
+
+  private departamentos = new Map<number, Department>();
+  private departamentosLoaded = false;
+
+  private categorias = new Map<number, Category>();
+  private categoriasLoaded = false;
+
   // Cache for products by department
-  private productsByDepartmentCache = new Map<number, ProductWithImage[]>();
+  private productsByDepartmentCache = new Map<number, ProductDetail[]>();
 
   // USD currency ID
   private readonly USD_MONEDA_ID = 2;
@@ -42,6 +53,37 @@ export class SupabaseService {
       environment.supabaseUrl,
       environment.supabaseKey,
     );
+  }
+
+  // Preload etiquetas
+  async preloadEtiquetas(): Promise<void> {
+    if (!this.etiquetasIntLoaded) {
+      const { data, error } = await this.supabase
+        .from('etiquetas')
+        .select('*')
+        .eq('interna', true);
+
+      if (!error && data) {
+        (data as Etiqueta[]).forEach((e) => {
+          this.etiquetasInt.set(e.id_etiqueta, e);
+        });
+        this.etiquetasIntLoaded = true;
+      }
+    }
+
+    if (!this.etiquetasFTLoaded) {
+      const { data, error } = await this.supabase
+        .from('etiquetas')
+        .select('*')
+        .eq('ficha_tecnica', true);
+
+      if (!error && data) {
+        (data as Etiqueta[]).forEach((e) => {
+          this.etiquetasFT.set(e.id_etiqueta, e);
+        });
+        this.etiquetasFTLoaded = true;
+      }
+    }
   }
 
   // Preload all USD prices into cache
@@ -57,7 +99,8 @@ export class SupabaseService {
           this.mainImageCache.set(
             p.id_producto,
             this.getProductImageUrl(
-            this.parseName(p.nombre) + '_' + p.id_relacion),
+              this.parseName(p.nombre) + '_' + p.id_relacion,
+            ),
           );
         });
         this.mainImageCacheLoaded = true;
@@ -76,7 +119,11 @@ export class SupabaseService {
           if (imag == undefined) {
             imag = [];
           }
-          imag.push(this.getProductImageUrl(this.parseName(p.nombre) + '_' + p.id_relacion));
+          imag.push(
+            this.getProductImageUrl(
+              this.parseName(p.nombre) + '_' + p.id_relacion,
+            ),
+          );
           this.imagesCache.set(p.id_producto, imag);
         });
 
@@ -104,6 +151,34 @@ export class SupabaseService {
     }
   }
 
+  async preloadDepartments(): Promise<void> {
+    if (this.departamentosLoaded) return;
+
+    const { data, error } = await this.supabase
+      .from('departamentos')
+      .select('*');
+
+    if (!error && data) {
+      (data as Department[]).forEach((d) => {
+        this.departamentos.set(d.id_departamento, d);
+      });
+      this.departamentosLoaded = true;
+    }
+  }
+
+  async preloadCategorys(): Promise<void> {
+    if (this.categoriasLoaded) return;
+
+    const { data, error } = await this.supabase.from('categorias').select('*');
+
+    if (!error && data) {
+      (data as Category[]).forEach((c) => {
+        this.categorias.set(c.id_categoria, c);
+      });
+      this.categoriasLoaded = true;
+    }
+  }
+
   // Get price from cache
   getPriceUSD(productId: number): number | undefined {
     return this.pricesCache.get(productId);
@@ -112,7 +187,7 @@ export class SupabaseService {
   // Get main image from cache
   getImageUrl(productId: number): string | undefined {
     var img = this.mainImageCache.get(productId);
-    if(img != undefined){
+    if (img != undefined) {
       return img;
     }
     return this.imagesCache.get(productId)?.at(0);
@@ -157,6 +232,16 @@ export class SupabaseService {
 
   // Fetch all web-enabled departments
   async getDepartments(): Promise<DepartmentWithImage[]> {
+    if (this.departamentosLoaded) {
+      let deps: Department[] = [];
+      this.departamentos.forEach((k, _) => deps.push(k));
+
+      return deps.filter(d => d.web).map((dep) => ({
+        ...dep,
+        imageUrl: this.getDepartmentImageUrl(dep),
+      }));
+    }
+
     const { data, error } = await this.supabase
       .from('departamentos')
       .select('*')
@@ -166,6 +251,13 @@ export class SupabaseService {
     if (error) {
       console.error('Error fetching departments:', error);
       return [];
+    }
+
+    if (!error && data) {
+      (data as Department[]).forEach((d) => {
+        this.departamentos.set(d.id_departamento, d);
+      });
+      this.departamentosLoaded = true;
     }
 
     return (data as Department[]).map((dept) => ({
@@ -193,6 +285,8 @@ export class SupabaseService {
 
   // Fetch department by ID
   async getDepartmentById(id: number): Promise<DepartmentWithImage | null> {
+    this.departamentos;
+
     const { data, error } = await this.supabase
       .from('departamentos')
       .select('*')
@@ -213,6 +307,7 @@ export class SupabaseService {
 
   // Fetch category by ID
   async getCategoryById(id: number): Promise<Category | null> {
+    if (this.categorias.has(id)) return this.categorias.get(id) ?? null;
     const { data, error } = await this.supabase
       .from('categorias')
       .select('*')
@@ -230,7 +325,7 @@ export class SupabaseService {
   // Fetch products by department with caching and optimized price loading
   async getProductsByDepartment(
     departmentId: number,
-  ): Promise<ProductWithImage[]> {
+  ): Promise<ProductDetail[]> {
     // Check cache first
     if (this.productsByDepartmentCache.has(departmentId)) {
       return this.productsByDepartmentCache.get(departmentId)!;
@@ -239,11 +334,14 @@ export class SupabaseService {
     // Ensure prices are preloaded
     await this.preloadPrices();
     await this.preloadImages();
+    await this.preloadEtiquetas();
+    await this.preloadCategorys();
+    await this.preloadDepartments();
 
     const { data, error } = await this.supabase
       .from('productos')
       .select(
-        'id_producto, descripcion, codigo, id_departamento, id_categoria, activo, web',
+        'id_producto, descripcion, info, codigo, id_departamento, id_categoria, activo, web',
       )
       .eq('id_departamento', departmentId)
       .eq('activo', true)
@@ -255,28 +353,50 @@ export class SupabaseService {
       return [];
     }
 
-    const products = (data as Product[]).map((product) => ({
+    let products = (data as Product[]).map((product) => ({
       ...product,
       imageUrl: this.getImageUrl(product.id_producto),
+      images: this.getImagesUrls(product.id_producto),
       precioUSD: this.getPriceUSD(product.id_producto),
+      etiquetasFT: [],
+      etiquetasInt: [],
     }));
 
-    // Cache the results
-    this.productsByDepartmentCache.set(departmentId, products);
+    let finalProducts: ProductDetail[] = [];
 
-    return products;
+    for (let index = 0; index < products.length; index++) {
+      const p = products[index];
+      const etiquetas = await this.getProductEtiquetas(p.id_producto);
+      finalProducts.push({
+        ...p,
+        etiquetasFT: etiquetas.get('ficha_tecnica') ?? [],
+        etiquetasInt: etiquetas.get('interna') ?? [],
+        department: this.departamentos.get(p.id_departamento)!,
+        category: p.id_categoria
+          ? (this.categorias.get(p.id_categoria) ?? null)
+          : null,
+      });
+    }
+
+    // Cache the results
+    this.productsByDepartmentCache.set(departmentId, finalProducts);
+
+    return finalProducts;
   }
 
   // Fetch products by category with optimized price loading
-  async getProductsByCategory(categoryId: number): Promise<ProductWithImage[]> {
+  async getProductsByCategory(categoryId: number): Promise<ProductDetail[]> {
     // Ensure prices are preloaded
     await this.preloadPrices();
     await this.preloadImages();
+    await this.preloadEtiquetas();
+    await this.preloadCategorys();
+    await this.preloadDepartments();
 
     const { data, error } = await this.supabase
       .from('productos')
       .select(
-        'id_producto, descripcion, codigo, id_departamento, id_categoria, activo, web',
+        'id_producto, descripcion, codigo, info, id_departamento, id_categoria, activo, web',
       )
       .eq('id_categoria', categoryId)
       .eq('activo', true)
@@ -288,23 +408,47 @@ export class SupabaseService {
       return [];
     }
 
-    return (data as Product[]).map((product) => ({
+    let products = (data as Product[]).map((product) => ({
       ...product,
       imageUrl: this.getImageUrl(product.id_producto),
       precioUSD: this.getPriceUSD(product.id_producto),
+      images: this.getImagesUrls(product.id_producto),
+      etiquetasFT: [],
+      etiquetasInt: [],
     }));
+
+    let finalProducts: ProductDetail[] = [];
+
+    for (let index = 0; index < products.length; index++) {
+      const p = products[index];
+      const etiquetas = await this.getProductEtiquetas(p.id_producto);
+      finalProducts.push({
+        ...p,
+        etiquetasFT: etiquetas.get('ficha_tecnica') ?? [],
+        etiquetasInt: etiquetas.get('interna') ?? [],
+        department: this.departamentos.get(p.id_departamento)!,
+        category: p.id_categoria
+          ? (this.categorias.get(p.id_categoria) ?? null)
+          : null,
+      });
+    }
+
+    return finalProducts;
   }
 
   // Search products across all departments and categories
-  async searchProducts(query: string): Promise<ProductWithImage[]> {
+  async searchProducts(query: string): Promise<ProductDetail[]> {
     // Ensure prices are preloaded
     await this.preloadPrices();
     await this.preloadImages();
+    await this.preloadEtiquetas();
+    await this.preloadCategorys();
+    await this.preloadDepartments();
 
     const { data, error } = await this.supabase
       .from('productos')
       .select(
-        'id_producto, descripcion, codigo, id_departamento, id_categoria, activo, web',
+        'id_producto, descripcion, codigo, info, id_departamento, id_categoria, activo, web',
       )
       .eq('activo', true)
       .eq('web', true)
@@ -317,11 +461,32 @@ export class SupabaseService {
       return [];
     }
 
-    return (data as Product[]).map((product) => ({
+    let products = (data as Product[]).map((product) => ({
       ...product,
       imageUrl: this.getImageUrl(product.id_producto),
       precioUSD: this.getPriceUSD(product.id_producto),
+      images: this.getImagesUrls(product.id_producto),
+      etiquetasFT: [],
+      etiquetasInt: [],
     }));
+
+    let finalProducts: ProductDetail[] = [];
+
+    for (let index = 0; index < products.length; index++) {
+      const p = products[index];
+      const etiquetas = await this.getProductEtiquetas(p.id_producto);
+      finalProducts.push({
+        ...p,
+        etiquetasFT: etiquetas.get('ficha_tecnica') ?? [],
+        etiquetasInt: etiquetas.get('interna') ?? [],
+        department: this.departamentos.get(p.id_departamento)!,
+        category: p.id_categoria
+          ? (this.categorias.get(p.id_categoria) ?? null)
+          : null,
+      });
+    }
+
+    return finalProducts;
   }
 
   // Clear caches (useful for refresh)
@@ -363,40 +528,37 @@ export class SupabaseService {
   }
 
   // Fetch product etiquetas (only ficha_tecnica = true)
-  async getProductEtiquetas(productId: number): Promise<EtiquetaConValor[]> {
+  async getProductEtiquetas(
+    productId: number,
+  ): Promise<Map<string, EtiquetaConValor[]>> {
     const { data: relacionData, error: relacionError } = await this.supabase
       .from('etiquetas_productos')
       .select('id_etiqueta, valor')
       .eq('id_producto', productId);
 
     if (relacionError || !relacionData || relacionData.length === 0) {
-      return [];
+      return new Map();
     }
 
-    const etiquetaIds = (relacionData as EtiquetaProducto[]).map(
-      (r) => r.id_etiqueta,
-    );
-
-    const { data: etiquetasData, error: etiquetasError } = await this.supabase
-      .from('etiquetas')
-      .select('id_etiqueta, nombre, ficha_tecnica')
-      .in('id_etiqueta', etiquetaIds)
-      .eq('ficha_tecnica', true);
-
-    if (etiquetasError || !etiquetasData) {
-      return [];
-    }
-
-    const etiquetasMap = new Map(
-      (etiquetasData as Etiqueta[]).map((e) => [e.id_etiqueta, e]),
-    );
-
-    return (relacionData as EtiquetaProducto[])
-      .filter((r) => etiquetasMap.has(r.id_etiqueta))
+    const eFT: EtiquetaConValor[] = (relacionData as EtiquetaProducto[])
+      .filter((r) => this.etiquetasFT.has(r.id_etiqueta))
       .map((r) => ({
-        ...etiquetasMap.get(r.id_etiqueta)!,
+        ...this.etiquetasFT.get(r.id_etiqueta)!,
         valor: r.valor,
       }));
+
+    const eInt: EtiquetaConValor[] = (relacionData as EtiquetaProducto[])
+      .filter((r) => this.etiquetasInt.has(r.id_etiqueta))
+      .map((r) => ({
+        ...this.etiquetasInt.get(r.id_etiqueta)!,
+        valor: r.valor,
+      }));
+
+    let map = new Map<string, EtiquetaConValor[]>();
+    map.set('ficha_tecnica', eFT);
+    map.set('interna', eInt);
+
+    return map;
   }
 
   // Fetch product by ID
@@ -419,6 +581,9 @@ export class SupabaseService {
   async getProductDetail(productId: number): Promise<ProductDetail | null> {
     await this.preloadPrices();
     await this.preloadImages();
+    await this.preloadEtiquetas();
+    await this.preloadCategorys();
+    await this.preloadDepartments();
 
     const product = await this.getProductById(productId);
     if (!product) return null;
@@ -428,21 +593,17 @@ export class SupabaseService {
       this.getProductEtiquetas(productId),
     ]);
 
-    const [department, category] = await Promise.all([
-      this.getDepartmentById(product.id_departamento),
-      product.id_categoria
-        ? this.getCategoryById(product.id_categoria)
-        : Promise.resolve(null),
-    ]);
-
     return {
       ...product,
       imageUrl: this.getImageUrl(productId),
       precioUSD: this.getPriceUSD(productId),
       images: this.getImagesUrls(productId),
-      etiquetas,
-      department: department!,
-      category: category || undefined,
+      etiquetasFT: etiquetas.get('ficha_tecnica') ?? [],
+      etiquetasInt: etiquetas.get('interna') ?? [],
+      department: this.departamentos.get(product.id_departamento)!,
+      category: product.id_categoria
+        ? (this.categorias.get(product.id_categoria) ?? null)
+        : null,
     };
   }
 }

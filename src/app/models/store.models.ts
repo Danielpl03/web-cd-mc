@@ -15,7 +15,7 @@ export interface Product {
   id_producto: number;
   descripcion: string;
   codigo: string | null;
-  // precio: number | null;
+  info: string | null;
   id_departamento: number;
   id_categoria: number | null;
   activo: boolean;
@@ -49,6 +49,7 @@ export interface Etiqueta {
   id_etiqueta: number;
   nombre: string;
   ficha_tecnica: boolean;
+  interna: boolean;
 }
 
 export interface EtiquetaProducto {
@@ -62,16 +63,15 @@ export interface EtiquetaConValor extends Etiqueta {
   valor: string;
 }
 
-export interface ProductWithImage extends Product {
+
+export interface ProductDetail extends Product {
   imageUrl?: string;
   precioUSD?: number;
-}
-
-export interface ProductDetail extends ProductWithImage {
   images?: string[];
-  etiquetas: EtiquetaConValor[];
   department: Department;
-  category?: Category;
+  category: Category | null;
+  etiquetasFT: EtiquetaConValor[];
+  etiquetasInt: EtiquetaConValor[];
 }
 
 /** Línea persistida en el carrito (localStorage). */

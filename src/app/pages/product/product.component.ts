@@ -1,4 +1,12 @@
-import { Component, OnInit, signal, computed, inject, PLATFORM_ID } from '@angular/core';
+// product.component.ts
+import {
+  Component,
+  OnInit,
+  signal,
+  computed,
+  inject,
+  PLATFORM_ID,
+} from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CurrencyPipe, isPlatformBrowser } from '@angular/common';
 import { SupabaseService } from '../../services/supabase.service';
@@ -13,7 +21,6 @@ import { environment } from '../../environment';
   standalone: true,
   imports: [RouterLink, CurrencyPipe, LoadingSpinnerComponent],
   template: `
-    
     <main class="main-content">
       @if (loading()) {
         <app-loading-spinner />
@@ -22,7 +29,12 @@ import { environment } from '../../environment';
           <a routerLink="/">Inicio</a>
           @if (product()!.department) {
             <span class="separator">/</span>
-            <a [routerLink]="['/departamento', product()!.department!.id_departamento]">
+            <a
+              [routerLink]="[
+                '/departamento',
+                product()!.department!.id_departamento,
+              ]"
+            >
               {{ product()!.department!.departamento }}
             </a>
           }
@@ -40,32 +52,44 @@ import { environment } from '../../environment';
           <!-- Image Carousel -->
           <div class="carousel-section">
             <div class="main-image-container">
-              <button 
-                class="carousel-btn prev" 
-                (click)="prevImage()" 
+              <button
+                class="carousel-btn prev"
+                (click)="prevImage()"
                 [disabled]="this.images().length <= 1"
-                aria-label="Imagen anterior">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M15 18l-6-6 6-6"/>
+                aria-label="Imagen anterior"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M15 18l-6-6 6-6" />
                 </svg>
               </button>
-              
+
               <div class="main-image">
-                <img 
-                  [src]="currentImage()" 
+                <img
+                  [src]="currentImage()"
                   [alt]="product()!.descripcion"
                   (error)="onImageError($event)"
                   loading="eager"
                 />
               </div>
-              
-              <button 
-                class="carousel-btn next" 
-                (click)="nextImage()" 
+
+              <button
+                class="carousel-btn next"
+                (click)="nextImage()"
                 [disabled]="this.images().length <= 1"
-                aria-label="Siguiente imagen">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M9 18l6-6-6-6"/>
+                aria-label="Siguiente imagen"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M9 18l6-6-6-6" />
                 </svg>
               </button>
             </div>
@@ -73,12 +97,17 @@ import { environment } from '../../environment';
             @if (this.images().length > 1) {
               <div class="thumbnails">
                 @for (img of this.images(); track img; let i = $index) {
-                  <button 
-                    class="thumbnail" 
+                  <button
+                    class="thumbnail"
                     [class.active]="currentIndex() === i"
                     (click)="setImage(i)"
-                    [attr.aria-label]="'Ver imagen ' + (i + 1)">
-                    <img [src]="img" [alt]="'Miniatura ' + (i + 1)" loading="lazy" />
+                    [attr.aria-label]="'Ver imagen ' + (i + 1)"
+                  >
+                    <img
+                      [src]="img"
+                      [alt]="'Miniatura ' + (i + 1)"
+                      loading="lazy"
+                    />
                   </button>
                 }
               </div>
@@ -92,15 +121,26 @@ import { environment } from '../../environment';
           <!-- Product Info -->
           <div class="product-info">
             <h1 class="product-title">{{ product()!.descripcion }}</h1>
-            
+
             @if (product()!.codigo) {
               <p class="product-code">Código: {{ product()!.codigo }}</p>
             }
 
+            @if (availability(); as avail) {
+              <div
+                class="availability-badge"
+                [class]="'status-' + getAvailabilityClass(avail)"
+              >
+                {{ avail }}
+              </div>
+            }
+
             <div class="price-section">
               @if (product()!.precioUSD) {
-                <span class="price">{{ product()!.precioUSD | currency:'USD':'symbol':'1.2-2' }}</span>
-              } 
+                <span class="price">{{
+                  product()!.precioUSD | currency: 'USD' : 'symbol' : '1.2-2'
+                }}</span>
+              }
             </div>
 
             <div class="cart-actions">
@@ -108,7 +148,8 @@ import { environment } from '../../environment';
                 type="button"
                 class="btn-add-cart"
                 (click)="addToCart()"
-                [class.added]="justAdded()">
+                [class.added]="justAdded()"
+              >
                 @if (justAdded()) {
                   Añadido al carrito
                 } @else {
@@ -119,11 +160,14 @@ import { environment } from '../../environment';
             </div>
 
             <!-- Ficha Técnica -->
-            @if (product()!.etiquetas.length > 0) {
+            @if (product()!.etiquetasFT.length > 0) {
               <div class="specs-section">
                 <h2 class="specs-title">Detalles del Producto</h2>
                 <dl class="specs-list">
-                  @for (etiqueta of product()!.etiquetas; track etiqueta.id_etiqueta) {
+                  @for (
+                    etiqueta of product()!.etiquetasFT;
+                    track etiqueta.id_etiqueta
+                  ) {
                     <div class="spec-item">
                       <dt class="spec-label">{{ etiqueta.nombre }}</dt>
                       <dd class="spec-value">{{ etiqueta.valor }}</dd>
@@ -134,14 +178,26 @@ import { environment } from '../../environment';
             }
 
             <div class="whatsapp-inquiry">
-              <p class="whatsapp-inquiry-label">¿Necesitas más datos sobre este artículo?</p>
+              <p class="whatsapp-inquiry-label">
+                ¿Necesitas más datos sobre este artículo?
+              </p>
               <button
                 type="button"
                 class="btn-whatsapp-inquiry"
                 (click)="askWhatsAppAboutProduct()"
-                aria-label="Pedir más información por WhatsApp sobre este producto">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.883 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                aria-label="Pedir más información por WhatsApp sobre este producto"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.883 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+                  />
                 </svg>
                 Pedir más información por WhatsApp
               </button>
@@ -155,7 +211,6 @@ import { environment } from '../../environment';
         </div>
       }
     </main>
-
   `,
   styleUrls: ['product.component.css'],
 })
@@ -171,6 +226,14 @@ export class ProductComponent implements OnInit {
     return this.images()[this.currentIndex()];
   });
 
+  availability = computed(() => {
+    const p = this.product();
+    if (p) {
+      return p.etiquetasInt.find((ep) => ep.id_etiqueta == 5)?.valor;
+    }
+    return '';
+  });
+
   justAdded = signal(false);
   private readonly platformId = inject(PLATFORM_ID);
 
@@ -178,11 +241,11 @@ export class ProductComponent implements OnInit {
     private route: ActivatedRoute,
     private supabaseService: SupabaseService,
     private cartService: CartService,
-    private seo: SeoService
+    private seo: SeoService,
   ) {}
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
+    this.route.params.subscribe((params) => {
       const productId = Number(params['id']);
       if (productId) {
         this.loadProduct(productId);
@@ -193,15 +256,16 @@ export class ProductComponent implements OnInit {
   async loadProduct(productId: number): Promise<void> {
     this.loading.set(true);
     this.currentIndex.set(0);
-    
-    const productDetail = await this.supabaseService.getProductDetail(productId);
+
+    const productDetail =
+      await this.supabaseService.getProductDetail(productId);
     this.product.set(productDetail);
     var img: string[] = [];
-    if(productDetail?.imageUrl){
-      img.push(productDetail!.imageUrl)
+    if (productDetail?.imageUrl) {
+      img.push(productDetail!.imageUrl);
     }
-    if(productDetail?.images){
-      productDetail.images.forEach( value => img.push(value) )
+    if (productDetail?.images) {
+      productDetail.images.forEach((value) => img.push(value));
     }
     this.images.set(img);
     this.loading.set(false);
@@ -219,7 +283,9 @@ export class ProductComponent implements OnInit {
     }
 
     const p = productDetail;
-    const imgsForLd = [p.imageUrl, ...(p.images ?? [])].filter(Boolean) as string[];
+    const imgsForLd = [p.imageUrl, ...(p.images ?? [])].filter(
+      Boolean,
+    ) as string[];
     const absImages = this.seo.productImageUrlsForJsonLd(imgsForLd);
     const price = p.precioUSD ?? null;
     let description = `${p.descripcion}. Disponible en ${this.seo.brand}.`;
@@ -280,17 +346,27 @@ export class ProductComponent implements OnInit {
     if (p.codigo) {
       lines.push(`Código: ${p.codigo}`);
     }
-    // lines.push(`ID: ${p.id_producto}`);
     lines.push(`Enlace: ${productUrl}`);
     lines.push('');
     lines.push('Gracias.');
     const message = lines.join('\n');
     const encoded = encodeURIComponent(message);
-    const phoneDigits = (environment.whatsappOrderPhone ?? '').replace(/\D/g, '');
+    const phoneDigits = (environment.whatsappOrderPhone ?? '').replace(
+      /\D/g,
+      '',
+    );
     const url =
       phoneDigits.length > 0
         ? `https://wa.me/${phoneDigits}?text=${encoded}`
         : `https://api.whatsapp.com/send?text=${encoded}`;
     window.open(url, '_blank', 'noopener,noreferrer');
+  }
+
+  // Retorna clase CSS según el valor de disponibilidad
+  getAvailabilityClass(value: string): string {
+    const v = value.trim().toUpperCase();
+    if (v === 'DISPONIBLE') return 'disponible';
+    if (v === 'AGOTADO') return 'agotado';
+    return 'otros';
   }
 }

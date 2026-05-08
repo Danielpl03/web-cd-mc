@@ -1,7 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, computed, Input } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { ProductWithImage } from '../../models/store.models';
+import { ProductDetail } from '../../models/store.models';
 
 @Component({
   selector: 'app-product-card',
@@ -10,8 +10,8 @@ import { ProductWithImage } from '../../models/store.models';
   template: `
     <a [routerLink]="['/producto', product.id_producto]" class="product-card">
       <div class="image-container">
-        <img 
-          [src]="product.imageUrl" 
+        <img
+          [src]="product.imageUrl"
           [alt]="product.descripcion"
           (load)="onImageLoad()"
           (error)="onImageError($event)"
@@ -31,109 +31,170 @@ import { ProductWithImage } from '../../models/store.models';
         } @else {
           <p class="product-code">&nbsp;</p>
         }
+
+        <!-- Insignia de disponibilidad -->
+        @if (availability()) {
+          <div
+            class="availability-badge"
+            [class]="'status-' + getAvailabilityClass(availability()!)"
+          >
+            {{ availability() }}
+          </div>
+        }
+
         @if (product.precioUSD) {
-          <p class="product-price">{{ product.precioUSD | currency:'USD':'symbol':'1.2-2' }}</p>
-        } 
+          <p class="product-price">
+            {{ product.precioUSD | currency: 'USD' : 'symbol' : '1.2-2' }}
+          </p>
+        }
       </div>
     </a>
   `,
-  styles: [`
-    .product-card {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      background: var(--surface);
-      border-radius: var(--radius);
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      transition: transform 0.2s, box-shadow 0.2s;
-      text-decoration: none;
-      color: inherit;
-    }
+  styles: [
+    `
+      .product-card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background: var(--surface);
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+        text-decoration: none;
+        color: inherit;
+      }
 
-    .product-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-lg);
-    }
+      .product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+      }
 
-    .image-container {
-      position: relative;
-      aspect-ratio: 1;
-      overflow: hidden;
-      background: var(--background);
-    }
+      .image-container {
+        position: relative;
+        aspect-ratio: 1;
+        overflow: hidden;
+        background: var(--background);
+      }
 
-    .image-container img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s, opacity 0.3s;
-    }
-    
-    .image-placeholder {
-      position: absolute;
-      inset: 0;
-      background: var(--background);
-    }
-    
-    .skeleton {
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, var(--surface) 25%, var(--background) 50%, var(--surface) 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-    }
-    
-    @keyframes shimmer {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
-    }
+      .image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition:
+          transform 0.3s,
+          opacity 0.3s;
+      }
 
-    .product-card:hover .image-container img {
-      transform: scale(1.05);
-    }
+      .image-placeholder {
+        position: absolute;
+        inset: 0;
+        background: var(--background);
+      }
 
-    .product-info {
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-    }
+      .skeleton {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--surface) 25%,
+          var(--background) 50%,
+          var(--surface) 75%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+      }
 
-    .product-name {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 0.25rem;
-      line-height: 1.4;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      min-height: 2.8em;
-    }
+      @keyframes shimmer {
+        0% {
+          background-position: -200% 0;
+        }
+        100% {
+          background-position: 200% 0;
+        }
+      }
 
-    .product-code {
-      font-size: 0.8125rem;
-      color: var(--text-muted);
-      margin-bottom: 0.5rem;
-      min-height: 1.25em;
-    }
+      .product-card:hover .image-container img {
+        transform: scale(1.05);
+      }
 
-    .product-price {
-      font-size: 1.125rem;
-      font-weight: 700;
-      color: var(--accent);
-      margin-top: auto;
-    }
-  `]
+      .product-info {
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+
+      .product-name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-height: 2.8em;
+      }
+
+      .product-code {
+        font-size: 0.8125rem;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+        min-height: 1.25em;
+      }
+
+      .product-price {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--accent);
+        margin-top: auto;
+      }
+
+      .availability-badge {
+        display: inline-block;
+        padding: 0.15rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin: 0.3rem 0;
+        line-height: 1.4;
+        white-space: nowrap;
+      }
+
+      .status-disponible {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .status-agotado {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+
+      .status-otros {
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeeba;
+      }
+    `,
+  ],
 })
 export class ProductCardComponent {
-  @Input({ required: true }) product!: ProductWithImage;
+  @Input({ required: true }) product!: ProductDetail;
   imageLoading = true;
 
+  availability = computed(() => {
+    return this.product.etiquetasInt.find((ep) => ep.id_etiqueta == 5)?.valor;
+  });
+
   onImageLoad(): void {
-    console.log(this.product)
+    console.log(this.product);
     this.imageLoading = false;
   }
 
@@ -141,5 +202,12 @@ export class ProductCardComponent {
     const img = event.target as HTMLImageElement;
     img.src = 'images/placeholder.jpg';
     this.imageLoading = false;
+  }
+
+  getAvailabilityClass(value: string): string {
+    const v = value.trim().toUpperCase();
+    if (v === 'DISPONIBLE') return 'disponible';
+    if (v === 'AGOTADO') return 'agotado';
+    return 'otros';
   }
 }

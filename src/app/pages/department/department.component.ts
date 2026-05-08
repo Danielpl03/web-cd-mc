@@ -6,7 +6,7 @@ import { LoadingSpinnerComponent } from '../../components/loading-spinner/loadin
 import { EmptyStateComponent } from '../../components/empty-state/empty-state.component';
 import { SupabaseService } from '../../services/supabase.service';
 import { SeoService } from '../../services/seo.service';
-import { DepartmentWithImage, Category, ProductWithImage } from '../../models/store.models';
+import { DepartmentWithImage, Category, ProductDetail } from '../../models/store.models';
 
 type DepartmentCategoryFilter =
   | { mode: 'all' }
@@ -224,7 +224,7 @@ type DepartmentCategoryFilter =
 export class DepartmentComponent implements OnInit {
   department = signal<DepartmentWithImage | null>(null);
   categories = signal<Category[]>([]);
-  products = signal<ProductWithImage[]>([]);
+  products = signal<ProductDetail[]>([]);
   categoryFilter = signal<DepartmentCategoryFilter>({ mode: 'all' });
   loading = signal(true);
 
