@@ -156,7 +156,8 @@ export class SupabaseService {
 
     const { data, error } = await this.supabase
       .from('departamentos')
-      .select('*');
+      .select('*')
+      .order('orden');
 
     if (!error && data) {
       (data as Department[]).forEach((d) => {
@@ -246,7 +247,7 @@ export class SupabaseService {
       .from('departamentos')
       .select('*')
       .eq('web', true)
-      .order('departamento');
+      .order('orden');
 
     if (error) {
       console.error('Error fetching departments:', error);

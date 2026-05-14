@@ -33,12 +33,8 @@ export class SeoService {
   readonly defaultDescription =
     'Tienda en línea C&D Márquez Corp: Haz tus pedidos y consulta por WhatsApp.';
 
-  private log(...args: unknown[]): void {
-    console.log('[SEO]', ...args);
-  }
-
   setPage(config: SeoPageConfig): void {
-    this.log('setPage called with', config);
+    
 
     const fullTitle = config.title.includes(this.brand)
       ? config.title
@@ -65,8 +61,6 @@ export class SeoService {
           : '';
       canonicalUrl = `${origin}${pathname}${search}`;
     }
-
-    this.log('Resolved canonical URL:', canonicalUrl);
 
     const ogType = config.pageType === 'product' ? 'product' : 'website';
     this.meta.updateTag({ property: 'og:title', content: fullTitle });
@@ -103,11 +97,6 @@ export class SeoService {
         this.meta.removeTag('property="og:image:alt"');
         this.meta.removeTag('name="twitter:image:alt"');
       }
-      this.log('Image tags set:', absImage, {
-        w: config.imageWidth,
-        h: config.imageHeight,
-        alt: config.imageAlt,
-      });
     } else {
       this.meta.removeTag('property="og:image"');
       this.meta.removeTag('name="twitter:image"');
@@ -116,7 +105,6 @@ export class SeoService {
       this.meta.removeTag('property="og:image:height"');
       this.meta.removeTag('property="og:image:alt"');
       this.meta.removeTag('name="twitter:image:alt"');
-      this.log('No image set');
     }
 
     this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
@@ -131,7 +119,6 @@ export class SeoService {
 
     this.setCanonicalLink(canonicalUrl);
     this.setJsonLd(config.jsonLd ?? null);
-    this.log('Finished setting page meta');
   }
 
   buildProductJsonLd(p: ProductDetail, imageAbsoluteUrls: string[]): Record<string, unknown> {
@@ -153,7 +140,6 @@ export class SeoService {
     if (p.codigo) {
       data['sku'] = p.codigo;
     }
-    this.log('Built Product JSON-LD', data);
     return data;
   }
 
@@ -184,7 +170,6 @@ export class SeoService {
       ],
     };
 
-    this.log('Setting home page');
     this.setPage({
       title: 'Inicio',
       description: this.defaultDescription,
@@ -196,14 +181,12 @@ export class SeoService {
   private resolveOrigin(): string {
     const configured = environment.siteUrl?.replace(/\/$/, '').trim();
     if (configured) {
-      this.log('Using environment.siteUrl as origin:', configured);
       return configured;
     }
     const browserOrigin =
       typeof this.document.defaultView?.location?.origin === 'string'
         ? this.document.defaultView.location.origin
         : '';
-    this.log('Using browser location.origin:', browserOrigin);
     return browserOrigin;
   }
 
@@ -211,40 +194,33 @@ export class SeoService {
   productImageUrlsForJsonLd(urls: string[]): string[] {
     const origin = this.resolveOrigin();
     const out: string[] = [];
-    this.log('Converting image URLs to absolute:', urls);
     for (const u of urls) {
       const abs = this.toAbsoluteImageUrl(u, origin);
       if (abs) {
         out.push(abs);
       }
     }
-    this.log('Absolute image URLs:', out);
     return out;
   }
 
   private toAbsoluteImageUrl(url: string | null | undefined, origin: string): string | null {
     if (!url || !origin) {
-      this.log('toAbsoluteImageUrl: null input or no origin', { url, origin });
       return null;
     }
     const u = url.trim();
     if (!u) {
-      this.log('toAbsoluteImageUrl: empty string after trim');
       return null;
     }
     if (u.startsWith('http://') || u.startsWith('https://')) {
-      this.log('toAbsoluteImageUrl: already absolute', u);
       return u;
     }
     const path = u.startsWith('/') ? u : `/${u}`;
     const full = `${origin}${path}`;
-    this.log('toAbsoluteImageUrl: resolved', full);
     return full;
   }
 
   private setCanonicalLink(href: string): void {
     if (!href) {
-      this.log('setCanonicalLink: empty href, skipping');
       return;
     }
     let link = this.document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
@@ -252,21 +228,17 @@ export class SeoService {
       link = this.document.createElement('link');
       link.setAttribute('rel', 'canonical');
       this.document.head.appendChild(link);
-      this.log('Created canonical link element');
     }
     link.setAttribute('href', href);
-    this.log('Set canonical href:', href);
   }
 
   private setJsonLd(data: Record<string, unknown> | null): void {
     const existing = this.document.getElementById('seo-structured-data');
     if (existing) {
       existing.remove();
-      this.log('Removed existing JSON-LD script');
     }
 
     if (!data) {
-      this.log('No JSON-LD data, skipping');
       return;
     }
 
@@ -275,6 +247,5 @@ export class SeoService {
     script.type = 'application/ld+json';
     script.textContent = JSON.stringify(data);
     this.document.head.appendChild(script);
-    this.log('JSON-LD script added for:', Object.keys(data).join(', ') || 'root');
   }
 }

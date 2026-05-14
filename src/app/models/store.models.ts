@@ -2,6 +2,7 @@ export interface Department {
   id_departamento: number;
   departamento: string;
   web: boolean;
+  orden: number;
 }
 
 export interface Category {
