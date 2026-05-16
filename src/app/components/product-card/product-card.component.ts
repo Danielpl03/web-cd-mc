@@ -32,13 +32,17 @@ import { ProductDetail } from '../../models/store.models';
           <p class="product-code">&nbsp;</p>
         }
 
-        <!-- Insignia de disponibilidad -->
         @if (availability()) {
           <div
-            class="availability-badge"
-            [class]="'status-' + getAvailabilityClass(availability()!)"
+            [class]="
+              'availability-badge status-' +
+              getAvailabilityClass(availability()!)
+            "
+            role="status"
+            [attr.aria-label]="'Disponibilidad: ' + availability()"
           >
-            {{ availability() }}
+            <span class="availability-dot" aria-hidden="true"></span>
+            <span class="availability-text">{{ availability() }}</span>
           </div>
         }
 
@@ -155,32 +159,76 @@ import { ProductDetail } from '../../models/store.models';
       }
 
       .availability-badge {
-        display: inline-block;
-        padding: 0.15rem 0.5rem;
-        border-radius: 12px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        margin: 0.3rem 0;
-        line-height: 1.4;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        align-self: flex-start;
+        margin: 0.25rem 0 0.65rem;
+        padding: 0.4rem 0.65rem 0.4rem 0.55rem;
+        border-radius: 9999px;
+        font-size: 0.6875rem;
+        font-weight: 700;
+        line-height: 1.2;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
         white-space: nowrap;
+        border: 1px solid transparent;
+        box-shadow:
+          0 1px 2px rgba(26, 39, 68, 0.06),
+          inset 0 1px 0 rgba(255, 255, 255, 0.65);
       }
 
-      .status-disponible {
-        background: #d4edda;
-        color: #155724;
-        border: 1px solid #c3e6cb;
+      .availability-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.7);
       }
 
-      .status-agotado {
-        background: #f8d7da;
-        color: #721c24;
-        border: 1px solid #f5c6cb;
+      .availability-text {
+        max-width: 11rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
-      .status-otros {
-        background: #fff3cd;
-        color: #856404;
-        border: 1px solid #ffeeba;
+      .availability-badge.status-disponible {
+        color: #0f5132;
+        background: linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%);
+        border-color: rgba(16, 185, 129, 0.35);
+      }
+
+      .availability-badge.status-disponible .availability-dot {
+        background: #10b981;
+        box-shadow:
+          0 0 0 2px rgba(255, 255, 255, 0.7),
+          0 0 10px rgba(16, 185, 129, 0.45);
+      }
+
+      .availability-badge.status-agotado {
+        color: #842029;
+        background: linear-gradient(180deg, #fef2f2 0%, #fee2e2 100%);
+        border-color: rgba(239, 68, 68, 0.3);
+      }
+
+      .availability-badge.status-agotado .availability-dot {
+        background: #ef4444;
+        box-shadow:
+          0 0 0 2px rgba(255, 255, 255, 0.7),
+          0 0 8px rgba(239, 68, 68, 0.35);
+      }
+
+      .availability-badge.status-otros {
+        color: #664d03;
+        background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%);
+        border-color: rgba(245, 158, 11, 0.35);
+      }
+
+      .availability-badge.status-otros .availability-dot {
+        background: #f59e0b;
+        box-shadow:
+          0 0 0 2px rgba(255, 255, 255, 0.7),
+          0 0 8px rgba(245, 158, 11, 0.4);
       }
     `,
   ],
@@ -194,7 +242,6 @@ export class ProductCardComponent {
   });
 
   onImageLoad(): void {
-    console.log(this.product);
     this.imageLoading = false;
   }
 

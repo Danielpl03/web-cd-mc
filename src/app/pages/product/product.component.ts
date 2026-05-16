@@ -14,12 +14,18 @@ import { SeoService } from '../../services/seo.service';
 import { CartService } from '../../services/cart.service';
 import { ProductDetail } from '../../models/store.models';
 import { LoadingSpinnerComponent } from '../../components/loading-spinner/loading-spinner.component';
+import { ProductCardComponent } from '../../components/product-card/product-card.component';
 import { environment } from '../../environment';
 
 @Component({
   selector: 'app-product',
   standalone: true,
-  imports: [RouterLink, CurrencyPipe, LoadingSpinnerComponent],
+  imports: [
+    RouterLink,
+    CurrencyPipe,
+    LoadingSpinnerComponent,
+    ProductCardComponent,
+  ],
   template: `
     <main class="main-content">
       @if (loading()) {
@@ -204,6 +210,22 @@ import { environment } from '../../environment';
             </div>
           </div>
         </div>
+
+        @if (recommendedProducts().length > 0) {
+          <section
+            class="recommended-section"
+            aria-labelledby="recommended-heading"
+          >
+            <h2 id="recommended-heading" class="recommended-title">
+              También te puede interesar
+            </h2>
+            <div class="recommended-grid">
+              @for (rec of recommendedProducts(); track rec.id_producto) {
+                <app-product-card [product]="rec" />
+              }
+            </div>
+          </section>
+        }
       } @else {
         <div class="not-found">
           <h2>Producto no encontrado</h2>
@@ -216,6 +238,7 @@ import { environment } from '../../environment';
 })
 export class ProductComponent implements OnInit {
   product = signal<ProductDetail | null>(null);
+  recommendedProducts = signal<ProductDetail[]>([]);
   loading = signal(true);
   currentIndex = signal(0);
   images = signal<string[]>([]);
@@ -256,6 +279,7 @@ export class ProductComponent implements OnInit {
   async loadProduct(productId: number): Promise<void> {
     this.loading.set(true);
     this.currentIndex.set(0);
+    this.recommendedProducts.set([]);
 
     const productDetail =
       await this.supabaseService.getProductDetail(productId);
@@ -269,6 +293,12 @@ export class ProductComponent implements OnInit {
     }
     this.images.set(img);
     this.loading.set(false);
+
+    if (productDetail) {
+      const recommended =
+        await this.supabaseService.getRecommendedProductDetails(productId);
+      this.recommendedProducts.set(recommended);
+    }
 
     if (!productDetail) {
       this.seo.setPage({

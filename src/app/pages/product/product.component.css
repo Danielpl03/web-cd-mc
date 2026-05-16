@@ -385,3 +385,41 @@
   color: #856404;
   border: 1px solid #ffeeba;
 }
+
+/* Productos recomendados */
+.recommended-section {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+.recommended-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 1.25rem;
+}
+
+.recommended-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.recommended-grid > * {
+  height: 100%;
+}
+
+@media (max-width: 640px) {
+  .recommended-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .recommended-grid {
+    grid-template-columns: 1fr;
+  }
+}

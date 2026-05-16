@@ -46,6 +46,13 @@ export interface ProductoImage {
   principal: boolean
 }
 
+/** Relación producto → producto sugerido (tabla de sugerencias). */
+export interface Sugerencia {
+  id_sugerencia: number;
+  id_producto: number;
+  id_producto_sugerido: number;
+}
+
 export interface Etiqueta {
   id_etiqueta: number;
   nombre: string;
