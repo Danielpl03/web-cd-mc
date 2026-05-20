@@ -177,7 +177,34 @@
 .product-code {
   font-size: 0.9375rem;
   color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.product-presentation {
   margin-bottom: 1.5rem;
+  padding: 1.25rem 1.25rem 1.25rem 1rem;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  box-shadow: var(--shadow);
+}
+
+.presentation-title {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  margin: 0 0 0.65rem;
+}
+
+.presentation-text {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  white-space: pre-line;
 }
 
 .price-section {

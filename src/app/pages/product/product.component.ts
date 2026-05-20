@@ -132,6 +132,18 @@ import { environment } from '../../environment';
               <p class="product-code">Código: {{ product()!.codigo }}</p>
             }
 
+            @if (product()!.info?.trim()) {
+              <section
+                class="product-presentation"
+                aria-labelledby="product-presentation-heading"
+              >
+                <h2 id="product-presentation-heading" class="presentation-title">
+                  Presentación
+                </h2>
+                <p class="presentation-text">{{ product()!.info }}</p>
+              </section>
+            }
+
             @if (availability(); as avail) {
               <div
                 class="availability-badge"
