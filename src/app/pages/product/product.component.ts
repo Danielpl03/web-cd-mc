@@ -137,9 +137,6 @@ import { environment } from '../../environment';
                 class="product-presentation"
                 aria-labelledby="product-presentation-heading"
               >
-                <h2 id="product-presentation-heading" class="presentation-title">
-                  Presentación
-                </h2>
                 <p class="presentation-text">{{ product()!.info }}</p>
               </section>
             }
