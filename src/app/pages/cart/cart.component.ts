@@ -136,7 +136,7 @@ export class CartComponent implements OnInit {
     this.seo.setPage({
       title: 'Carrito de compras',
       description:
-        'Revisa los productos en tu carrito y finaliza el pedido por WhatsApp en C&D Márquez Corp.',
+        'Revisa los productos en tu carrito y finaliza el pedido por WhatsApp en C&D Marquez Corp.',
       urlPath: '/carrito',
       noIndex: true,
       jsonLd: null,

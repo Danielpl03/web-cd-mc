@@ -313,7 +313,7 @@ export class ProductComponent implements OnInit {
       this.seo.setPage({
         title: 'Producto no encontrado',
         description:
-          'El producto solicitado no está disponible o ha sido retirado del catálogo de C&D Márquez Corp.',
+          'El producto solicitado no está disponible o ha sido retirado del catálogo de C&D Marquez Corp.',
         urlPath: `/producto/${productId}`,
         noIndex: true,
         jsonLd: null,

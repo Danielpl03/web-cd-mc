@@ -29,9 +29,9 @@ export class SeoService {
   private readonly meta = inject(Meta);
   private readonly document = inject(DOCUMENT);
 
-  readonly brand = 'C&D Márquez Corp';
+  readonly brand = 'C&D Marquez Corp';
   readonly defaultDescription =
-    'Tienda en línea C&D Márquez Corp: Haz tus pedidos y consulta por WhatsApp.';
+    'Tienda en línea C&D Marquez Corp: Haz tus pedidos y consulta por WhatsApp.';
 
   setPage(config: SeoPageConfig): void {
     

@@ -11,7 +11,7 @@ import { CartService } from '../../services/cart.service';
     <header class="header">
       <div class="header-content">
         <a routerLink="/" class="logo-link">
-          <img src="images/logo.jpg" alt="C&D Márquez Corp" class="logo" />
+          <img src="images/logo.jpg" alt="C&D Marquez Corp" class="logo" />
         </a>
         
         <div class="search-container">

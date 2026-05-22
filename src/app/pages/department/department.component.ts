@@ -279,7 +279,7 @@ export class DepartmentComponent implements OnInit {
       this.seo.setPage({
         title: 'Departamento no encontrado',
         description:
-          'El departamento solicitado no existe o no está disponible en la tienda en línea C&D Márquez Corp.',
+          'El departamento solicitado no existe o no está disponible en la tienda en línea C&D Marquez Corp.',
         urlPath: `/departamento/${id}`,
         noIndex: true,
         jsonLd: null,

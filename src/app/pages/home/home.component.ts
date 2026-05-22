@@ -14,11 +14,11 @@ import { DepartmentWithImage } from '../../models/store.models';
   template: `
     <div class="home-page">
       <section class="hero">
-        <h1>Bienvenido a C&D Márquez Corp</h1>
+        <h1>Bienvenido a C&D Marquez Corp</h1>
         <p>Descubre nuestra amplia variedad de productos</p>
-        <p class="delivery-info">
+        <!-- <p class="delivery-info">
           🚚 Entregas en La Habana y Pinar del Río
-        </p>
+        </p> -->
       </section>
 
       <section class="departments-section">

@@ -179,7 +179,7 @@ export class CategoryComponent implements OnInit {
       this.seo.setPage({
         title: 'Categoría no encontrada',
         description:
-          'La categoría solicitada no existe o no está disponible en C&D Márquez Corp.',
+          'La categoría solicitada no existe o no está disponible en C&D Marquez Corp.',
         urlPath: `/categoria/${id}`,
         noIndex: true,
         jsonLd: null,

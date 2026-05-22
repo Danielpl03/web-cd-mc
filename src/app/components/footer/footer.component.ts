@@ -6,7 +6,7 @@ import { Component } from '@angular/core';
   template: `
     <footer class="footer">
       <div class="footer-content">
-        <p>&copy; {{ currentYear }} C&D Márquez Corp. Todos los derechos reservados.</p>
+        <p>&copy; {{ currentYear }} C&D Marquez Corp. Todos los derechos reservados.</p>
       </div>
     </footer>
   `,
