@@ -1,6 +1,8 @@
 // home.component.ts
 import { Component, OnInit, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { DepartmentCardComponent } from '../../components/department-card/department-card.component';
+import { COMPANY } from '../../constants/company.constants';
 import { LoadingSpinnerComponent } from '../../components/loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../../components/empty-state/empty-state.component';
 import { SupabaseService } from '../../services/supabase.service';
@@ -10,7 +12,12 @@ import { DepartmentWithImage } from '../../models/store.models';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [DepartmentCardComponent, LoadingSpinnerComponent, EmptyStateComponent],
+  imports: [
+    RouterLink,
+    DepartmentCardComponent,
+    LoadingSpinnerComponent,
+    EmptyStateComponent,
+  ],
   template: `
     <div class="home-page">
       <section class="hero">
@@ -19,7 +26,26 @@ import { DepartmentWithImage } from '../../models/store.models';
         <!-- <p class="delivery-info">
           🚚 Entregas en La Habana y Pinar del Río
         </p> -->
+        <div class="hero-actions">
+          <a routerLink="/cotizacion" class="hero-btn primary">Solicitar cotización</a>
+          <a routerLink="/sobre-nosotros" class="hero-btn secondary">Sobre nosotros</a>
+        </div>
       </section>
+
+      <!-- <section class="trust-strip" aria-label="Información de la empresa">
+        <div class="trust-item">
+          <span class="trust-label">Sede</span>
+          <span class="trust-value">{{ company.location.headquarters }}</span>
+        </div>
+        <div class="trust-item">
+          <span class="trust-label">Actividad</span>
+          <span class="trust-value">Mayorista e importación internacional</span>
+        </div>
+        <div class="trust-item">
+          <span class="trust-label">Logística</span>
+          <span class="trust-value">{{ company.location.logisticsHub }}</span>
+        </div>
+      </section> -->
 
       <section class="departments-section">
         <h2>Nuestros Departamentos</h2>
@@ -44,6 +70,7 @@ import { DepartmentWithImage } from '../../models/store.models';
   styleUrls: ['home.component.css'],
 })
 export class HomeComponent implements OnInit {
+  readonly company = COMPANY;
   departments = signal<DepartmentWithImage[]>([]);
   loading = signal(true);
 

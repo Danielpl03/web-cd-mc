@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../services/cart.service';
 
@@ -14,6 +14,13 @@ import { CartService } from '../../services/cart.service';
           <img src="images/logo.jpg" alt="C&D Marquez Corp" class="logo" />
         </a>
         
+        <!-- <nav class="main-nav" aria-label="Principal">
+          <a routerLink="/sobre-nosotros" routerLinkActive="active">Nosotros</a>
+          <a routerLink="/cotizacion" routerLinkActive="active" class="nav-quote"
+            >Cotización</a
+          >
+        </nav> -->
+
         <div class="search-container">
           <div class="search-wrapper">
             <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -133,6 +140,43 @@ import { CartService } from '../../services/cart.service';
       border-radius: 9px;
     }
 
+    .main-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      flex-shrink: 0;
+    }
+
+    .main-nav a {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      white-space: nowrap;
+      transition:
+        color 0.2s,
+        background 0.2s;
+    }
+
+    .main-nav a:hover,
+    .main-nav a.active {
+      color: var(--primary);
+      background: var(--background);
+    }
+
+    .main-nav .nav-quote {
+      color: var(--primary);
+      border: 1px solid var(--border);
+    }
+
+    .main-nav .nav-quote:hover,
+    .main-nav .nav-quote.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--text-primary);
+    }
+
     .search-container {
       flex: 1;
       display: flex;
@@ -227,6 +271,10 @@ import { CartService } from '../../services/cart.service';
 
       .logo {
         height: 45px;
+      }
+
+      .main-nav {
+        display: none;
       }
 
       .search-container {

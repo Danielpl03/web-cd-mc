@@ -31,7 +31,7 @@ export class SeoService {
 
   readonly brand = 'C&D Marquez Corp';
   readonly defaultDescription =
-    'Tienda en línea C&D Marquez Corp: Haz tus pedidos y consulta por WhatsApp.';
+    'Tienda en línea C&amp;D Marquez Corp: Haz tus pedidos y consulta por WhatsApp.';
 
   setPage(config: SeoPageConfig): void {
     
