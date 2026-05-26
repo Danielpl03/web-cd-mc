@@ -2,7 +2,8 @@
 export const COMPANY = {
   legalName: 'C&D Marquez Corp',
   displayName: 'C&D Marquez Corp',
-  tagline: 'Distribución mayorista e importación internacional',
+  tagline:
+    'Distribución mayorista y minorista.',
   address: {
     line1: '18324 SW 152nd Pl',
     city: 'Miami',
@@ -20,6 +21,7 @@ export const COMPANY = {
   },
   business: {
     wholesale: true,
+    retail: true,
     internationalTrade: true,
   },
   productCategories: [

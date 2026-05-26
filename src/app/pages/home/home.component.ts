@@ -39,7 +39,7 @@ import { DepartmentWithImage } from '../../models/store.models';
         </div>
         <div class="trust-item">
           <span class="trust-label">Actividad</span>
-          <span class="trust-value">Mayorista e importación internacional</span>
+          <span class="trust-value">Mayorista y servicio minorista (productos en Panamá)</span>
         </div>
         <div class="trust-item">
           <span class="trust-label">Logística</span>

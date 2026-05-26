@@ -35,6 +35,17 @@ import { COMPANY } from '../../constants/company.constants';
                     }
                   </ul>
                 }
+
+                @if (section.images?.length) {
+                  <div class="legal-image-grid" aria-label="Imágenes">
+                    @for (img of section.images; track img.src) {
+                      <figure class="legal-figure">
+                        <img [src]="img.src" [alt]="img.alt" loading="lazy" />
+                        <figcaption>{{ img.alt }}</figcaption>
+                      </figure>
+                    }
+                  </div>
+                }
               </section>
             }
 
@@ -111,6 +122,52 @@ import { COMPANY } from '../../constants/company.constants';
 
       .not-found-legal .btn-primary {
         margin-top: 1rem;
+      }
+
+      .legal-image-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .legal-figure {
+        margin: 0;
+      }
+
+      .legal-figure img {
+        width: 100%;
+        height: 210px;
+        object-fit: contain;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        background: var(--background);
+      }
+
+      .legal-figure figcaption {
+        margin-top: 0.5rem;
+        font-size: 0.8125rem;
+        color: var(--text-muted);
+        line-height: 1.4;
+      }
+
+      @media (max-width: 900px) {
+        .legal-image-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .legal-figure img {
+          height: 190px;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .legal-image-grid {
+          grid-template-columns: 1fr;
+        }
+        .legal-figure img {
+          height: 220px;
+        }
       }
     `,
   ],

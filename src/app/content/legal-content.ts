@@ -4,6 +4,7 @@ export type LegalSection = {
   title: string;
   paragraphs: string[];
   list?: string[];
+  images?: { src: string; alt: string }[];
 };
 
 export type LegalDocument = {
@@ -93,7 +94,7 @@ export const LEGAL_DOCUMENTS: Record<string, LegalDocument> = {
       {
         title: '2. Naturaleza del servicio',
         paragraphs: [
-          `${COMPANY.legalName} opera como empresa de distribución mayorista y comercio internacional con sede en Miami, Florida, con operaciones logísticas vinculadas a la Zona Libre de Colón, Panamá. Los precios, disponibilidad y condiciones comerciales pueden variar y se confirman al formalizar cada pedido o cotización.`,
+          `${COMPANY.legalName} opera con sede en Miami, Florida. Los productos se gestionan y encuentran en Panamá. Ofrecemos atención tanto para clientes mayoristas como para compras minoristas. Una vez acordada una compra, el cliente puede retirar en almacenes en Panamá o coordinar envío con terceros logísticos. Para destinos internacionales, nuestros afiliados gestionan el transporte. Los precios, disponibilidad y condiciones de entrega se confirman al formalizar cada pedido o cotización, incluyendo los costos de envío que se coordinen con la compañía logística responsable.`,
         ],
       },
       {
@@ -201,7 +202,7 @@ export const LEGAL_DOCUMENTS: Record<string, LegalDocument> = {
       {
         title: '1. Cobertura',
         paragraphs: [
-          `${COMPANY.legalName} coordina envíos nacionales e internacionales desde Miami, Florida, y aprovecha infraestructura logística asociada a la Zona Libre de Colón, Panamá, para consolidación y reexportación según destino y producto.`,
+          `${COMPANY.legalName} coordina entregas a partir de Panamá, donde se gestionan y almacenan los productos. Cuando aplique, utilizamos infraestructura logística vinculada a la ${COMPANY.location.logisticsHub} para consolidación y coordinación. Para retiros, el cliente puede recoger en nuestros almacenes en Panamá una vez confirmada la compra. Para envíos, la logística se realiza mediante una compañía tercera responsable del transporte; para destinos internacionales, nuestros afiliados gestionan el traslado. Los costos de envío se coordinan directamente con la compañía logística responsable.`,
         ],
       },
       {
@@ -219,7 +220,7 @@ export const LEGAL_DOCUMENTS: Record<string, LegalDocument> = {
       {
         title: '4. Costos de envío',
         paragraphs: [
-          'Flete, seguro, despacho aduanero y aranceles del destino pueden cotizarse por separado. Salvo pacto en contrario, el cliente asume impuestos de importación en su país.',
+          'El flete, seguro, despacho aduanero y otros cargos aplicables pueden cotizarse por separado según el destino y el método de transporte. Salvo pacto en contrario, el cliente asume los impuestos de importación en su país. En todos los casos, los costos de envío se coordinan directamente con la compañía logística responsable del traslado, quien confirma el presupuesto final de acuerdo con los requisitos del servicio.',
         ],
       },
       {
@@ -238,6 +239,17 @@ export const LEGAL_DOCUMENTS: Record<string, LegalDocument> = {
         title: '7. Contacto logístico',
         paragraphs: [
           `Consultas de envío: ${COMPANY.email} · Tel. ${COMPANY.phoneDisplay}.`,
+        ],
+      },
+      {
+        title: 'Compañía logística (referencial)',
+        paragraphs: [
+          'A continuación se muestran imágenes de la compañía aliada que coordina el transporte y el proceso logístico según el destino de cada compra.',
+        ],
+        images: [
+          { src: 'images/logistica-1.jpg', alt: 'Logística - carga 1' },
+          { src: 'images/logistica-2.jpg', alt: 'Logística - carga 2' },
+          { src: 'images/logistica-3.jpg', alt: 'Logística - carga 3' },
         ],
       },
     ],

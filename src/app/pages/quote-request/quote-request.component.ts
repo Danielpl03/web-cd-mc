@@ -25,7 +25,14 @@ import { QuoteRequest } from '../../models/quote.models';
         <p class="page-lead">
           Complete el formulario y envíe su solicitud por WhatsApp. Nuestro
           equipo comercial de {{ company.legalName }} le responderá con precios,
-          disponibilidad y opciones de envío.
+          disponibilidad y opciones de retiro o envío.
+          <br />
+          Los productos se gestionan en <strong>Panamá</strong>. Una vez acordada
+          una compra, puede <strong>recoger en nuestros almacenes</strong> o
+          <strong> coordinar envío</strong> con un tercero logístico. Para
+          destinos internacionales, nuestros afiliados se encargan del
+          transporte. Los <strong>costos de envío</strong> se coordinan
+          directamente con la compañía logística responsable.
         </p>
       </header>
 
@@ -306,7 +313,7 @@ export class QuoteRequestComponent implements OnInit {
   ngOnInit(): void {
     this.seo.setPage({
       title: 'Solicitar Cotización',
-      description: `Formulario de cotización mayorista de ${COMPANY.legalName}. Miami, FL · distribución internacional.`,
+      description: `Solicitar cotización B2B/B2C a ${COMPANY.legalName}. Productos gestionados en Panamá con retiro o envío coordinado por terceros; para envíos internacionales, afiliados gestionan el transporte.`,
       urlPath: '/cotizacion',
     });
   }
