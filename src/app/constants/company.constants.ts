@@ -12,8 +12,8 @@ export const COMPANY = {
     country: 'United States',
     formatted: '18324 SW 152nd Pl, Miami, FL 33187, United States',
   },
-  phone: '7863072124',
-  phoneDisplay: '(786) 307-2124',
+  phone: '+17866919325',
+  phoneDisplay: '+1 (786)-691-9325',
   email: 'cdmarquez.corp@gmail.com',
   location: {
     headquarters: 'Miami, Florida, USA',
@@ -32,6 +32,6 @@ export const COMPANY = {
   ],
 } as const;
 
-export const COMPANY_PHONE_TEL = `+1${COMPANY.phone}`;
+export const COMPANY_PHONE_TEL = `${COMPANY.phone}`;
 
 export const COMPANY_MAILTO = `mailto:${COMPANY.email}`;
