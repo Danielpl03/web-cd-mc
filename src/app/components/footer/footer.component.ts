@@ -50,9 +50,6 @@ import {
             <p>
               <a [href]="mailHref">{{ company.email }}</a>
             </p>
-            <p class="footer-hub">
-              Operaciones logísticas: {{ company.location.logisticsHub }}
-            </p>
           </section>
         </div>
 
